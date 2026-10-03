@@ -8,4 +8,4 @@ async def search_job_view(request):
         result= await search_jobs_with_agent(prompt)
         return render(request, 'jobs/results.html', {'result' : result})
 
-    return render(request, 'jobs/search.html')
+    return render(request)
