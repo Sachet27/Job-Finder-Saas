@@ -1,11 +1,453 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Results</title>
+
+    <title>Search Results</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 0 60px;
+        }
+
+        /* Header */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            color: #111827;
+        }
+
+        .header p {
+            color: #6b7280;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .search-again {
+            text-decoration: none;
+            background: #2563eb;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .search-again:hover {
+            background: #1d4ed8;
+        }
+
+        /* Error */
+
+        .error {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 10px;
+            padding: 20px;
+            color: #9f1239;
+        }
+
+        .error h2 {
+            margin-bottom: 5px;
+        }
+
+        /* Results */
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .results-header h2 {
+            font-size: 21px;
+            color: #111827;
+        }
+
+        .count {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Job Row */
+
+        .job-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .job-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 22px;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .job-card:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Job Header */
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 12px;
+        }
+
+        .job-title {
+            font-size: 19px;
+            color: #111827;
+        }
+
+        .source {
+            background: #f3f4f6;
+            color: #4b5563;
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Details */
+
+        .details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .detail {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .detail strong {
+            color: #374151;
+        }
+
+        /* Summary */
+
+        .summary {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        /* Footer */
+
+        .job-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding-top: 14px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .job-url {
+            color: #9ca3af;
+            font-size: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .view-job {
+            flex-shrink: 0;
+            text-decoration: none;
+            background: #111827;
+            color: white;
+            padding: 9px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .view-job:hover {
+            background: #374151;
+        }
+
+        /* Empty */
+
+        .empty {
+            background: white;
+            border: 1px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 650px) {
+
+            .container {
+                width: 92%;
+                padding-top: 25px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .search-again {
+                text-align: center;
+            }
+
+            .job-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .source {
+                align-self: flex-start;
+            }
+
+            .job-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .view-job {
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
 </head>
+
+
 <body>
-    {{result}}
+
+    <main class="container">
+
+        <header class="header">
+
+            <div>
+                <h1>Search Results</h1>
+
+                <p>
+                    Job opportunities found from your search
+                </p>
+            </div>
+
+            <a
+                href="{% url 'search' %}"
+                class="search-again"
+            >
+                New Search
+            </a>
+
+        </header>
+
+
+        {% if error %}
+
+            <div class="error">
+
+                <h2>Search Failed</h2>
+
+                <p>
+                    {{ error }}
+                </p>
+
+            </div>
+
+        {% else %}
+
+            <div class="results-header">
+
+                <h2>Job Listings</h2>
+
+                <span class="count">
+                    {{ jobs|length }} jobs found
+                </span>
+
+            </div>
+
+
+            {% if jobs %}
+
+                <div class="job-list">
+
+                    {% for job in jobs %}
+
+                        <article class="job-card">
+
+                            <div class="job-header">
+
+                                <h3 class="job-title">
+                                    {{ job.title }}
+                                </h3>
+
+                                {% if job.source %}
+                                    <span class="source">
+                                        {{ job.source }}
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="details">
+
+                                {% if job.job_type %}
+                                    <span class="detail">
+                                        <strong>Type:</strong>
+                                        {{ job.job_type }}
+                                    </span>
+                                {% endif %}
+
+                                {% if job.level %}
+                                    <span class="detail">
+                                        <strong>Level:</strong>
+                                        {{ job.level }}
+                                    </span>
+                                {% endif %}
+
+                                {% if job.salary %}
+                                    <span class="detail">
+                                        <strong>Salary:</strong>
+                                        {{ job.salary }}
+                                    </span>
+                                {% endif %}
+
+                                {% if job.posted %}
+                                    <span class="detail">
+                                        <strong>Posted:</strong>
+                                        {{ job.posted }}
+                                    </span>
+                                {% endif %}
+
+                                {% if job.applicants %}
+                                    <span class="detail">
+                                        <strong>Applicants:</strong>
+                                        {{ job.applicants }}
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if job.summary %}
+
+                                <p class="summary">
+                                    {{ job.summary }}
+                                </p>
+
+                            {% endif %}
+
+
+                            <div class="job-footer">
+
+                                {% if job.job_url %}
+
+                                    <span class="job-url">
+                                        {{ job.job_url }}
+                                    </span>
+
+                                    <a
+                                        href="{{ job.job_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="view-job"
+                                    >
+                                        View Job
+                                    </a>
+
+                                {% endif %}
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty">
+
+                    <p>
+                        No job listings were found.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        {% endif %}
+
+    </main>
+
+
+    <script>
+
+        // Temporary debugging
+        console.log("AI Result:", `{{ result|escapejs }}`);
+
+        {% for job in jobs %}
+            console.log("Job {{ forloop.counter }}:", {
+                title: `{{ job.title|escapejs }}`,
+                source: `{{ job.source|escapejs }}`,
+                job_type: `{{ job.job_type|default:""|escapejs }}`,
+                level: `{{ job.level|default:""|escapejs }}`,
+                salary: `{{ job.salary|default:""|escapejs }}`,
+                posted: `{{ job.posted|default:""|escapejs }}`,
+                applicants: `{{ job.applicants|default:""|escapejs }}`,
+                summary: `{{ job.summary|default:""|escapejs }}`,
+                job_url: `{{ job.job_url|default:""|escapejs }}`
+            });
+        {% endfor %}
+
+    </script>
+
 </body>
+
 </html>

@@ -1,15 +1,273 @@
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search</title>
+
+    <title>Search Jobs</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f7fb;
+            color: #111827;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 850px;
+            min-height: 100vh;
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content {
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 38px;
+            font-weight: 700;
+            letter-spacing: -0.8px;
+            margin-bottom: 28px;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+
+            background: white;
+            padding: 10px;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        input {
+            flex: 1;
+
+            border: none;
+            outline: none;
+
+            padding: 14px 15px;
+
+            font-size: 14px;
+            color: #111827;
+            background: transparent;
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+
+            padding: 0 24px;
+
+            background: #2563eb;
+            color: white;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.1s ease;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        h2 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        #message {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 92%;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            form {
+                flex-direction: column;
+                padding: 12px;
+            }
+
+            input {
+                width: 100%;
+            }
+
+            button {
+                height: 45px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <form method="post" action="">
-        {% csrf_token %}
-        <input type="text" name="prompt" value="" required/>
-        <button type="submit">Search</button>
-    </form>
+
+    <main class="container">
+
+        <div class="content">
+
+            <h1>Search Jobs</h1>
+
+
+            {% if not search_id %}
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+                    <input
+                        type="text"
+                        name="prompt"
+                        required
+                        placeholder="Describe the job you're looking for..."
+                    >
+
+                    <button type="submit">
+                        Search
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <h2 id="status">
+                    Searching...
+                </h2>
+
+                <p id="message">
+                    Finding relevant jobs. This may take a little while.
+                </p>
+
+
+                <script>
+
+                    const searchId = "{{ search_id }}";
+
+
+                    async function checkSearchStatus() {
+
+                        try {
+
+                            const response = await fetch(
+                                `/search/${searchId}/status/`
+                            );
+
+
+                            const data = await response.json();
+
+
+                            // ----------------------------
+                            // Still running
+                            // ----------------------------
+
+                            if (data.status === "RUNNING") {
+
+                                document.getElementById(
+                                    "status"
+                                ).textContent = "Searching...";
+
+
+                                setTimeout(
+                                    checkSearchStatus,
+                                    3000
+                                );
+
+                            }
+
+
+                            // ----------------------------
+                            // Completed
+                            // ----------------------------
+
+                            else if (data.status === "COMPLETED") {
+
+                                window.location.href =
+                                    data.redirect_url;
+
+                            }
+
+
+                            // ----------------------------
+                            // Failed
+                            // ----------------------------
+
+                            else if (data.status === "FAILED") {
+
+                                document.getElementById(
+                                    "status"
+                                ).textContent = "Search failed.";
+
+                                document.getElementById(
+                                    "message"
+                                ).textContent = data.error;
+
+                            }
+
+                        }
+
+                        catch (error) {
+
+                            console.error(error);
+
+                            document.getElementById(
+                                "status"
+                            ).textContent =
+                                "Unable to check search status.";
+
+                        }
+
+                    }
+
+
+                    checkSearchStatus();
+
+                </script>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
 </body>
+
 </html>
